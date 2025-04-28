@@ -18,4 +18,5 @@ model Todo {
   id      Int     @id @default(autoincrement())
   name    String
   success Boolean
+  edit   Boolean
 }

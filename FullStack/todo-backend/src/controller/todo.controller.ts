@@ -1,8 +1,10 @@
 import type { Context } from "hono";
 import * as todoModel from "../model/todo.model.ts";
 
-const GetTodo = (c: Context) => {
+const GetTodo = async (c: Context) => {
   try {
+    const todos = await todoModel.GetTodo();
+    return c.json(todos);
   } catch (e) {
     return c.json(
       {
@@ -15,8 +17,11 @@ const GetTodo = (c: Context) => {
   }
 };
 
-const AddTodo = (c: Context) => {
+const AddTodo = async (c: Context) => {
   try {
+    const name = await c.req.json();
+    const newTodo = await todoModel.AddTodo(name);
+    return c.json(newTodo);
   } catch (e) {
     return c.json(
       {
@@ -29,8 +34,11 @@ const AddTodo = (c: Context) => {
   }
 };
 
-const EditTodoName = (c: Context) => {
+const EditTodoName = async (c: Context) => {
   try {
+    const {id, name } = await c.req.json();
+    const newTodo = await todoModel.EditTodo(id, name);
+    return c.json(newTodo);
   } catch (e) {
     return c.json(
       {
@@ -43,8 +51,11 @@ const EditTodoName = (c: Context) => {
   }
 };
 
-const CompleteTodo = (c: Context) => {
+const CompleteTodo = async (c: Context) => {
   try {
+    const {id} = await c.req.json();
+    const newTodo = await todoModel.SuccessTodo(id);
+    return c.json(newTodo);
   } catch (e) {
     return c.json(
       {
@@ -57,8 +68,11 @@ const CompleteTodo = (c: Context) => {
   }
 };
 
-const DeleteTodo = (c: Context) => {
+const DeleteTodo = async (c: Context) => {
   try {
+    const id = await Number(c.req.param("todoId"));
+    const newTodo = await todoModel.DeleteTodo(id);
+    return c.json(newTodo);
   } catch (e) {
     return c.json(
       {

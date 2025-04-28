@@ -2,6 +2,7 @@ import { use, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { axios } from 'axios';
 
 function App() {
 
@@ -21,13 +22,13 @@ function App() {
   }
   function createTodo() {
     let newTodo = {
-      id: todos.length + 1,
       name: name,
       success: true,
       edit: false,
     }
     setTodos(prev => [...prev, newTodo]);
-    setName("")
+    axios.post('http://localhost:3000/todos', newTodo);
+    setName("");
   }
 
   function showTodo(id) {
