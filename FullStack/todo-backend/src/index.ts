@@ -1,26 +1,15 @@
-import { serve } from "@hono/node-server";
-import { Hono } from "hono";
-import { PrismaClient } from "./generated/prisma/index.js";
-import { mainRouter } from "./router/index.routes.ts";
-import { logger } from "hono/logger";
+import { serve } from '@hono/node-server'
+import { Hono } from 'hono'
 
-const app = new Hono();
-const db = new PrismaClient();
+const app = new Hono()
 
-app.use(logger());
+app.get('/', (c) => {
+  return c.text('Hello Hono!')
+})
 
-app.get("/", (c) => {
-  return c.text("Hello Hono!");
-});
-
-app.route("", mainRouter);
-
-serve(
-  {
-    fetch: app.fetch,
-    port: 8000,
-  },
-  (info) => {
-    console.log(`Server is running on http://localhost:${info.port}`);
-  }
-);
+serve({
+  fetch: app.fetch,
+  port: 3000
+}, (info) => {
+  console.log(`Server is running on http://localhost:${info.port}`)
+})

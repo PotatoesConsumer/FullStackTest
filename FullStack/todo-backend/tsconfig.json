@@ -1,5 +1,5 @@
 {
-  "compilerOptions": {
+"compilerOptions": {
     "target": "ESNext",
     "module": "NodeNext",
     "strict": true,
@@ -15,5 +15,6 @@
     "emitDeclarationOnly": true,
     "allowImportingTsExtensions":true,
   },
+ 
   "exclude": ["node_modules"]
 }
