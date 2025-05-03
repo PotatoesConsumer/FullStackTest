@@ -1,43 +1,103 @@
-import { use, useState } from 'react'
+import { use, useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import { axios } from 'axios';
+import { Axios } from './axiosInstance'
+import * as api from './api/todo'
 
 function App() {
 
   const [todos, setTodos] = useState([]);
   const [name, setName] = useState("");
 
-  function editTodo(todo, id) {
-    setName(todo.name);
+ // Function backend
+ // Test connection frontend and backend
+  const testConnection = async () => {
+      try {
+          const data = await Axios.get('/');
+          console.log(data.data);
+      } catch (e) {
+          console.log(`Error fetching backend server: ${e}`);
+      }
+  };
+
+  useEffect(() => {
+    testConnection();
+  }, []);
+
+  // getTodo
+	const fetchTodoData = async () => {
+		const data = await api.getTodo();
+		if (data.success) {
+			setTodos(data.data);
+		}
+	};
+
+	useEffect(() => {
+		fetchTodoData();
+	}, []);
+
+  // addTodo
+  const AddTodo = async (name) => {
+    await api.addTodo(name)
+    fetchTodoData();
+  }
+
+  // deleteTodo
+  const DeleteTodo = async (id) => {
+    await api.deleteTodo(id)
+  }
+
+  // completeTodo
+  const CompleteTodo = async (id) => {
+    await api.completeTodo(id);
+  }
+
+  // completeTodo
+  const EditTodo = async (id, name) => {
+    await api.editTodo(id, name);
+  }
+
+  // Function frontend
+  function editTodo(name, id) {
+    setName(name);
     setTodos(prev =>
       prev.map(todo =>
-        todo.id === id ? { ...todo, edit: true, success: false} : todo
+        todo.id === id ? { ...todo, edit: true} : todo
       )
     );
   }
-  function deleteTodo(id) {
+  function confirmTodo(id) {
+    setTodos(prev =>
+      prev.map(todo =>
+        todo.id === id ? { ...todo, name: name, edit: false } : todo
+      )
+    );
+    EditTodo(id, name);
+    setName("");
+  }
+  function removeTodo(id) {
     setTodos((prev) => prev.filter((todo) => todo.id !== id));
+    DeleteTodo(id);
   }
   function createTodo() {
     let newTodo = {
+      id: new Date(),
       name: name,
-      success: true,
+      success: false,
       edit: false,
     }
-    setTodos(prev => [...prev, newTodo]);
-    axios.post('http://localhost:3000/todos', newTodo);
-    setName("");
+    setTodos((prev) => [...prev, newTodo]);
+    AddTodo(newTodo.name);
   }
 
   function showTodo(id) {
     setTodos(prev =>
       prev.map(todo =>
-        todo.id === id && !todo.success ? { ...todo, success: true, edit: false, name: name  } : todo
+        todo.id === id ? { ...todo, success: true } : todo
       )
     );
-    setName("")
+    CompleteTodo(id);
   }
 
   return (
@@ -57,9 +117,10 @@ function App() {
                   <h1 className={todo.success == true ? "text-green-800" : "text-red-800"}>{todo.success == true ? "DONE" : "Not DONE"}</h1>
                 </div>
                 <div className=''>
-                  <button onClick={() => editTodo(todo, todo.id)} className='bg-black text-white mr-5 py-1 px-3 rounded-lg cursor-pointer'>Edit</button>
+                  {!todo.edit && <button onClick={() => editTodo(todo.name, todo.id)} className='bg-black text-white mr-5 py-1 px-3 rounded-lg cursor-pointer'>Edit</button>}
+                  {todo.edit && <button onClick={() => confirmTodo(todo.id)} className='bg-black text-white mr-5 py-1 px-3 rounded-lg cursor-pointer'>Confirm</button>}
                   <button onClick={() => showTodo(todo.id)} className={`${todo.success ? `bg-green-700` : `bg-yellow-400`} text-white mr-5 py-1 px-3 rounded-lg cursor-pointer`}>{todo.success ? "Complete" : "Uncomplete"}</button>
-                  <button onClick={() => deleteTodo(todo.id)} className='bg-red-700 text-white mr-5 py-1 px-3 rounded-lg cursor-pointer'>Delete</button>
+                  <button onClick={() => removeTodo(todo.id)} className='bg-red-700 text-white mr-5 py-1 px-3 rounded-lg cursor-pointer'>Delete</button>
                 </div>
               </div>
             )

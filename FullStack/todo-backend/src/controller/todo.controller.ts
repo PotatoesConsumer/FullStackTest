@@ -51,7 +51,7 @@ const EditTodoName = async (c: Context) => {
   }
 };
 
-const CompleteTodo = async (c: Context) => {
+const SuccessTodo = async (c: Context) => {
   try {
     const {id} = await c.req.json();
     const newTodo = await todoModel.SuccessTodo(id);
@@ -85,4 +85,4 @@ const DeleteTodo = async (c: Context) => {
   }
 };
 
-export { GetTodo, AddTodo, EditTodoName, CompleteTodo, DeleteTodo };
+export { GetTodo, AddTodo, EditTodoName, SuccessTodo, DeleteTodo };
